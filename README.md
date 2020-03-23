@@ -1,0 +1,1 @@
+Coding with object composition in mind => focus on what an object can do rather than trying to define what it is
