@@ -1,25 +1,32 @@
-// FACTORY FUNCTIONS
+// CREATING FACTORY FUNCTIONS
 // factory function for the attack method that will be assigned to a pokemon object
 const canAttack = pokemon => ({
-  attack: move => {
-    console.log(`${pokemon.name} uses ${move.name}!`);
+  target: opponent => {
+    console.log(`${pokemon.name} is targeting ${opponent.name}.`);
+    console.log(opponent);
+    return opponent;
+  },
+  // could not find a way to extract the target from the attack method, if so i would have had the target method as the method created by the factory function canTarget()
+  attack: (move, target) => {
+    let opponent = pokemon.target(target);
+    console.log(
+      `${pokemon.name} uses ${move.name} against enemy ${opponent.name}!`
+    );
     let damage = 0;
-    let hp = pokemon.stats.hp;
+    let hp = opponent.stats.hp;
     // chance of hit
     if (Math.random() * 100 < move.acc) {
       let rand = Math.random() * (1.0 - 0.85) + 0.85;
-
-      console.log('It hits!');
-      // actual Pokemon damage formula minus some modifiers
+      // actual damage formula minus some modifiers
       damage = Math.round(
         (((pokemon.stats.lvl / 5 + 2) *
           move.power *
-          (pokemon.stats.atk / pokemon.stats.def)) /
+          (opponent.stats.atk / opponent.stats.def)) /
           50 +
           2) *
           rand
       );
-      // chance of critical hit, actual Pokemon formula
+      // chance of critical hit, actual formula
       if (Math.random * 100 < pokemon.stats.spd / 512) {
         damage = damage * 2;
         console.log('A critical hit!');
@@ -27,10 +34,11 @@ const canAttack = pokemon => ({
     } else console.log('But it misses!');
     hp -= damage;
 
-    console.log(`Hit for ${damage} hp!`);
-    console.log(`${pokemon.name} has ${hp}hp left!`);
-    pokemon.stats.hp = hp;
-    pokemon.hasFainted();
+    console.log(`It hits for ${damage} hp!`);
+    console.log(`${opponent.name} has ${hp}hp left.`);
+    opponent.stats.hp = hp;
+    opponent.hasFainted();
+    // should it return something ?
   }
 });
 
@@ -46,6 +54,9 @@ const canFaint = pokemon => ({
     }
   }
 });
+
+// // factory function for targeting an opponent
+// const canTarget = pokemon => ({});
 
 // factory function for the move objects that will be passed as args to the attack method
 const move = (name, type, power, acc) => {
@@ -66,7 +77,12 @@ const pokemon = (name, type, lvl, hp, atk, def, spd, ...moveset) => {
     stats: { lvl, hp, atk, def, spd },
     moveset
   };
-  return Object.assign(state, canAttack(state), canFaint(state));
+  return Object.assign(
+    state,
+    canAttack(state),
+    canFaint(state)
+    // canTarget(state)
+  );
 };
 
 // DEFINING THE OBJECTS USED
@@ -112,6 +128,62 @@ const squirtle = pokemon(
   watergun
 );
 
+// GETTING USER INPUT
+// const readline = require('readline');
+// const terminal = readline.createInterface({
+//   input: process.stdin,
+//   output: process.stdout
+// });
+// function userAction() {
+//   terminal.setPrompt('Enter the name of your Pokemon:\n');
+//   let promptedPokemon = terminal.prompt();
+//   terminal.setPrompt('Enter the name of the enemy Pokemon:\n');
+//   let promptedOpponent = terminal.prompt();
+//   terminal.setPrompt(
+//     `Enter the number of the move ${promptedPokemon} should use (0 or 1):\n`
+//   );
+//   let promptedMove = terminal.prompt();
+
+//   await promptedPokemon.attack(
+//     promptedPokemon.moveset[promptedMove],
+//     promptedOpponent
+//   );
+// }
+// userAction();
+
+// not working at all => infinite looooooop
+// let choiceMade = false;
+// while (choiceMade === false) {
+//   terminal.setPrompt(
+//     'Choose your pokemon: \nEnter either Bulbasaur, Charmander or Squirtle \n'
+//   );
+//   terminal.prompt();
+//   terminal.on('line', function(answer) {
+//     switch (answer) {
+//       case 'Bulbasaur':
+//         choiceMade = true;
+//         console.log(`You chose ${answer}`);
+
+//         break;
+//       case 'Charmander':
+//         choiceMade = true;
+//         console.log(`You chose ${answer}`);
+
+//         break;
+//       case 'Squirtle':
+//         choiceMade = true;
+//         console.log(`You chose ${answer}`);
+
+//         break;
+
+//       default:
+//         choiceMade = false;
+
+//         break;
+//     }
+//   });
+// }
+
 //
 //
 //
@@ -121,9 +193,11 @@ const squirtle = pokemon(
 
 // TEST AREA
 
-charmander.attack(charmander.moveset[1]);
+// charmander.target(bulbasaur);
 
-charmander.attack(charmander.moveset[0]);
+// charmander.attack(charmander.moveset[1], bulbasaur);
+
+// charmander.attack(charmander.moveset[0], bulbasaur);
 
 // while (charmander.hasFainted() === false) {
 //   charmander.attack(charmander.moveset[0]);
