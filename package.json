@@ -1,0 +1,22 @@
+{
+  "name": "pokenode-battle",
+  "version": "1.0.0",
+  "description": "A Pokemon battle from an object composition perspective",
+  "main": "pokenode.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moreirathomas/pokenode-battle.git"
+  },
+  "author": "Thomas Moreira moreirathomas97@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/moreirathomas/pokenode-battle/issues"
+  },
+  "homepage": "https://github.com/moreirathomas/pokenode-battle#readme",
+  "dependencies": {
+    "prompt-sync": "^4.2.0"
+  }
+}

@@ -3,7 +3,6 @@
 const canAttack = pokemon => ({
   target: opponent => {
     console.log(`${pokemon.name} is targeting ${opponent.name}.`);
-    console.log(opponent);
     return opponent;
   },
   // could not find a way to extract the target from the attack method, if so i would have had the target method as the method created by the factory function canTarget()
@@ -129,67 +128,72 @@ const squirtle = pokemon(
 );
 
 // GETTING USER INPUT
-// const readline = require('readline');
-// const terminal = readline.createInterface({
-//   input: process.stdin,
-//   output: process.stdout
-// });
-// function userAction() {
-//   terminal.setPrompt('Enter the name of your Pokemon:\n');
-//   let promptedPokemon = terminal.prompt();
-//   terminal.setPrompt('Enter the name of the enemy Pokemon:\n');
-//   let promptedOpponent = terminal.prompt();
-//   terminal.setPrompt(
-//     `Enter the number of the move ${promptedPokemon} should use (0 or 1):\n`
-//   );
-//   let promptedMove = terminal.prompt();
+const prompt = require('prompt-sync')({ sigint: true });
+// initializing the variables to be accessed globaly
+let promptedPokemon = '';
+let promptedOpponent = '';
+let promptedMove = '';
+// getting the pokemons that will battle
+function chooseYourPokemon() {
+  promptedPokemon = prompt(
+    'Enter the name of your Pokemon, either Bulbasaur, Charmander or Squirtle: '
+  );
+  switch (promptedPokemon) {
+    case 'Bulbasaur':
+      promptedPokemon = bulbasaur;
+      break;
+    case 'Charmander':
+      promptedPokemon = charmander;
+      break;
+    case 'Squirtle':
+      promptedPokemon = squirtle;
+      break;
+    // default:
+    //   break;
+  }
+  promptedOpponent = prompt(
+    'Enter the name of the enemy Pokemon, either Bulbasaur, Charmander or Squirtle :'
+  );
+  switch (promptedOpponent) {
+    case 'Bulbasaur':
+      promptedOpponent = bulbasaur;
+      break;
+    case 'Charmander':
+      promptedOpponent = charmander;
+      break;
+    case 'Squirtle':
+      promptedOpponent = squirtle;
+      break;
+    // default:
+    //   break;
+  }
+  return promptedPokemon, promptedOpponent;
+}
+// choosing a move
+function chooseYourMove() {
+  promptedMove = Number(
+    prompt(
+      `Enter the number of the move ${promptedPokemon} should use (0 or 1): `
+    )
+  );
+  return promptedMove;
+}
+// taking a turn
+function takeTurn() {
+  chooseYourMove();
 
-//   await promptedPokemon.attack(
-//     promptedPokemon.moveset[promptedMove],
-//     promptedOpponent
-//   );
-// }
-// userAction();
+  promptedPokemon.attack(
+    promptedPokemon.moveset[promptedMove],
+    promptedOpponent
+  );
+}
 
-// not working at all => infinite looooooop
-// let choiceMade = false;
-// while (choiceMade === false) {
-//   terminal.setPrompt(
-//     'Choose your pokemon: \nEnter either Bulbasaur, Charmander or Squirtle \n'
-//   );
-//   terminal.prompt();
-//   terminal.on('line', function(answer) {
-//     switch (answer) {
-//       case 'Bulbasaur':
-//         choiceMade = true;
-//         console.log(`You chose ${answer}`);
+// starting the game
+chooseYourPokemon();
 
-//         break;
-//       case 'Charmander':
-//         choiceMade = true;
-//         console.log(`You chose ${answer}`);
-
-//         break;
-//       case 'Squirtle':
-//         choiceMade = true;
-//         console.log(`You chose ${answer}`);
-
-//         break;
-
-//       default:
-//         choiceMade = false;
-
-//         break;
-//     }
-//   });
-// }
-
-//
-//
-//
-//
-//
-//
+while (promptedOpponent.stats.hp > 0) {
+  takeTurn();
+}
 
 // TEST AREA
 
