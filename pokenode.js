@@ -1,18 +1,29 @@
+// color for line output
+const chalk = require('chalk');
+const greenChalk = chalk.green;
+const redChalk = chalk.red;
+const blueChalk = chalk.blue;
+//
+
 // CREATING FACTORY FUNCTIONS
 // factory function for the attack method that will be assigned to a pokemon object
 const canAttack = pokemon => ({
-  target: opponent => {
-    console.log(`${pokemon.name} is targeting ${opponent.name}.`);
-    return opponent;
+  target: enemy => {
+    // console.log(
+    //   `${pokemon.colorChalk(pokemon.name)} is targeting ${enemy.name}.`
+    // );
+    return enemy;
   },
   // could not find a way to extract the target from the attack method, if so i would have had the target method as the method created by the factory function canTarget()
   attack: (move, target) => {
-    let opponent = pokemon.target(target);
+    let enemy = pokemon.target(target);
     console.log(
-      `${pokemon.name} uses ${move.name} against enemy ${opponent.name}!`
+      `${pokemon.colorChalk(pokemon.name)} uses ${
+        move.name
+      } against enemy ${enemy.colorChalk(enemy.name)}!`
     );
     let damage = 0;
-    let hp = opponent.stats.hp;
+    let currentHp = enemy.stats.hp;
     // chance of hit
     if (Math.random() * 100 < move.acc) {
       let rand = Math.random() * (1.0 - 0.85) + 0.85;
@@ -20,7 +31,7 @@ const canAttack = pokemon => ({
       damage = Math.round(
         (((pokemon.stats.lvl / 5 + 2) *
           move.power *
-          (opponent.stats.atk / opponent.stats.def)) /
+          (enemy.stats.atk / enemy.stats.def)) /
           50 +
           2) *
           rand
@@ -31,12 +42,12 @@ const canAttack = pokemon => ({
         console.log('A critical hit!');
       }
     } else console.log('But it misses!');
-    hp -= damage;
+    currentHp -= damage;
 
     console.log(`It hits for ${damage} hp!`);
-    console.log(`${opponent.name} has ${hp}hp left.`);
-    opponent.stats.hp = hp;
-    opponent.hasFainted();
+    console.log(`${enemy.colorChalk(enemy.name)} has ${currentHp}hp left.`);
+    enemy.currentHp = currentHp;
+    enemy.hasFainted();
     // should it return something ?
   }
 });
@@ -44,17 +55,19 @@ const canAttack = pokemon => ({
 // factory function for checking if the pokemon has fainted
 const canFaint = pokemon => ({
   hasFainted: () => {
-    if (pokemon.stats.hp <= 0) {
-      console.log(`${pokemon.name} has fainted!`);
+    if (pokemon.currentHp <= 0) {
+      console.log(`${pokemon.colorChalk(pokemon.name)} has fainted!`);
       return true;
     } else {
-      console.log(`${pokemon.name} can continue to battle!`);
+      // console.log(
+      //   `${pokemon.colorChalk(pokemon.name)} can continue to battle!`
+      // );
       return false;
     }
   }
 });
 
-// // factory function for targeting an opponent
+// // factory function for targeting an enemy
 // const canTarget = pokemon => ({});
 
 // factory function for the move objects that will be passed as args to the attack method
@@ -69,11 +82,24 @@ const move = (name, type, power, acc) => {
 };
 
 // factory function for the pokemon objects that are assigned several methods
-const pokemon = (name, type, lvl, hp, atk, def, spd, ...moveset) => {
+const pokemon = (
+  name,
+  type,
+  lvl,
+  hp,
+  atk,
+  def,
+  spd,
+  currentHp,
+  colorChalk,
+  ...moveset
+) => {
   let state = {
     name,
     type,
     stats: { lvl, hp, atk, def, spd },
+    currentHp,
+    colorChalk,
     moveset
   };
   return Object.assign(
@@ -101,6 +127,8 @@ const bulbasaur = pokemon(
   49,
   49,
   45,
+  undefined,
+  greenChalk,
   tackle,
   vinewhip
 );
@@ -112,6 +140,8 @@ const charmander = pokemon(
   52,
   43,
   65,
+  undefined,
+  redChalk,
   scratch,
   ember
 );
@@ -123,9 +153,14 @@ const squirtle = pokemon(
   48,
   65,
   43,
+  undefined,
+  blueChalk,
   tackle,
   watergun
 );
+//
+
+//
 
 // GETTING USER INPUT
 const prompt = require('prompt-sync')({ sigint: true });
@@ -136,7 +171,9 @@ let promptedMove = '';
 // getting the pokemons that will battle
 function chooseYourPokemon() {
   promptedPokemon = prompt(
-    'Enter the name of your Pokemon, either Bulbasaur, Charmander or Squirtle: '
+    `Enter the name of your Pokemon, either ${greenChalk(
+      'Bulbasaur'
+    )}, ${redChalk('Charmander')} or ${blueChalk('Squirtle')}: `
   );
   switch (promptedPokemon) {
     case 'Bulbasaur':
@@ -152,7 +189,9 @@ function chooseYourPokemon() {
     //   break;
   }
   promptedOpponent = prompt(
-    'Enter the name of the enemy Pokemon, either Bulbasaur, Charmander or Squirtle :'
+    `Enter the name of the enemy Pokemon, either ${greenChalk(
+      'Bulbasaur'
+    )}, ${redChalk('Charmander')} or ${blueChalk('Squirtle')}: `
   );
   switch (promptedOpponent) {
     case 'Bulbasaur':
@@ -167,13 +206,17 @@ function chooseYourPokemon() {
     // default:
     //   break;
   }
+  promptedPokemon.currentHp = promptedPokemon.stats.hp;
+  promptedOpponent.currentHp = promptedOpponent.stats.hp;
   return promptedPokemon, promptedOpponent;
 }
 // choosing a move
 function chooseYourMove() {
   promptedMove = Number(
     prompt(
-      `Enter the number of the move ${promptedPokemon} should use (0 or 1): `
+      `Enter the number of the move ${promptedPokemon.colorChalk(
+        promptedPokemon.name
+      )} should use (0 or 1): `
     )
   );
   return promptedMove;
@@ -188,23 +231,36 @@ function takeTurn() {
   );
 }
 
-// starting the game
+// export everything
+// module.exports = {
+//   pokemon: pokemon(),
+//   chooseYourPokemon: chooseYourPokemon(),
+//   chooseYourMove: chooseYourMove(),
+//   takeTurn: takeTurn(),
+//   promptedPokemon,
+//   promptedOpponent,
+//   promptedMove,
+//   bulbasaur,
+//   charmander,
+//   squirtle,
+//   tackle,
+//   vinewhip,
+//   scratch,
+//   ember,
+//   watergun
+// };
+
+// // starting the game
 chooseYourPokemon();
 
-while (promptedOpponent.stats.hp > 0) {
+// while (promptedOpponent.currentHp > 0) {
+//   takeTurn();
+// }
+// => currentHp set to undefined to start, so wont enter the loop at 1st => dowhile
+do {
   takeTurn();
-}
+} while (promptedOpponent.currentHp > 0);
+console.log('You won!');
+// while(!promptedOpponent.hasFainted()) => hasFainted is called in the loop so 2 times the console.log()...
 
 // TEST AREA
-
-// charmander.target(bulbasaur);
-
-// charmander.attack(charmander.moveset[1], bulbasaur);
-
-// charmander.attack(charmander.moveset[0], bulbasaur);
-
-// while (charmander.hasFainted() === false) {
-//   charmander.attack(charmander.moveset[0]);
-// }
-// strangely hasFainted() is called within this loop => 2 times the "Charmander can continue to battle!"/"Charmander has fainted!"
-// charmander.hasFainted();
