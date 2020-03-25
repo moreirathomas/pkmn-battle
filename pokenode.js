@@ -10,7 +10,7 @@ const blueChalk = chalk.blue;
 const canAttack = pokemon => ({
   target: enemy => {
     // console.log(
-    //   `${pokemon.colorChalk(pokemon.name)} is targeting ${enemy.name}.`
+    //   `${pokemon.chalk(pokemon.name)} is targeting ${enemy.name}.`
     // );
     return enemy;
   },
@@ -18,12 +18,12 @@ const canAttack = pokemon => ({
   attack: (move, target) => {
     let enemy = pokemon.target(target);
     console.log(
-      `${pokemon.colorChalk(pokemon.name)} uses ${
+      `${pokemon.chalk(pokemon.name)} uses ${
         move.name
-      } against enemy ${enemy.colorChalk(enemy.name)}!`
+      } against enemy ${enemy.chalk(enemy.name)}!`
     );
     let damage = 0;
-    let currentHp = enemy.stats.hp;
+    // let currentHp = enemy.stats.hp;
     // chance of hit
     if (Math.random() * 100 < move.acc) {
       let rand = Math.random() * (1.0 - 0.85) + 0.85;
@@ -42,11 +42,11 @@ const canAttack = pokemon => ({
         console.log('A critical hit!');
       }
     } else console.log('But it misses!');
-    currentHp -= damage;
 
     console.log(`It hits for ${damage} hp!`);
-    console.log(`${enemy.colorChalk(enemy.name)} has ${currentHp}hp left.`);
-    enemy.currentHp = currentHp;
+    enemy.currentHp -= damage;
+    console.log(`${enemy.chalk(enemy.name)} has ${enemy.currentHp}hp left.`);
+    // enemy.currentHp = currentHp;
     enemy.hasFainted();
     // should it return something ?
   }
@@ -56,11 +56,11 @@ const canAttack = pokemon => ({
 const canFaint = pokemon => ({
   hasFainted: () => {
     if (pokemon.currentHp <= 0) {
-      console.log(`${pokemon.colorChalk(pokemon.name)} has fainted!`);
+      console.log(`${pokemon.chalk(pokemon.name)} has fainted!`);
       return true;
     } else {
       // console.log(
-      //   `${pokemon.colorChalk(pokemon.name)} can continue to battle!`
+      //   `${pokemon.chalk(pokemon.name)} can continue to battle!`
       // );
       return false;
     }
@@ -72,12 +72,7 @@ const canFaint = pokemon => ({
 
 // factory function for the move objects that will be passed as args to the attack method
 const move = (name, type, power, acc) => {
-  let state = {
-    name,
-    type,
-    power,
-    acc
-  };
+  let state = { name, type, power, acc };
   return Object.assign(state);
 };
 
@@ -91,7 +86,7 @@ const pokemon = (
   def,
   spd,
   currentHp,
-  colorChalk,
+  chalk,
   ...moveset
 ) => {
   let state = {
@@ -99,7 +94,7 @@ const pokemon = (
     type,
     stats: { lvl, hp, atk, def, spd },
     currentHp,
-    colorChalk,
+    chalk,
     moveset
   };
   return Object.assign(
@@ -165,102 +160,209 @@ const squirtle = pokemon(
 // GETTING USER INPUT
 const prompt = require('prompt-sync')({ sigint: true });
 // initializing the variables to be accessed globaly
-let promptedPokemon = '';
-let promptedOpponent = '';
-let promptedMove = '';
+let player = '';
+let opponent = '';
 // getting the pokemons that will battle
 function chooseYourPokemon() {
-  promptedPokemon = prompt(
+  player = prompt(
     `Enter the name of your Pokemon, either ${greenChalk(
       'Bulbasaur'
     )}, ${redChalk('Charmander')} or ${blueChalk('Squirtle')}: `
   );
-  switch (promptedPokemon) {
+  switch (player) {
     case 'Bulbasaur':
-      promptedPokemon = bulbasaur;
+      player = bulbasaur;
       break;
     case 'Charmander':
-      promptedPokemon = charmander;
+      player = charmander;
       break;
     case 'Squirtle':
-      promptedPokemon = squirtle;
+      player = squirtle;
       break;
     // default:
     //   break;
   }
-  promptedOpponent = prompt(
+  opponent = prompt(
     `Enter the name of the enemy Pokemon, either ${greenChalk(
       'Bulbasaur'
     )}, ${redChalk('Charmander')} or ${blueChalk('Squirtle')}: `
   );
-  switch (promptedOpponent) {
+  switch (opponent) {
     case 'Bulbasaur':
-      promptedOpponent = bulbasaur;
+      opponent = bulbasaur;
       break;
     case 'Charmander':
-      promptedOpponent = charmander;
+      opponent = charmander;
       break;
     case 'Squirtle':
-      promptedOpponent = squirtle;
+      opponent = squirtle;
       break;
     // default:
     //   break;
   }
-  promptedPokemon.currentHp = promptedPokemon.stats.hp;
-  promptedOpponent.currentHp = promptedOpponent.stats.hp;
-  return promptedPokemon, promptedOpponent;
+  player.currentHp = player.stats.hp;
+  opponent.currentHp = opponent.stats.hp;
+  return player, opponent;
 }
+
 // choosing a move
-function chooseYourMove() {
-  promptedMove = Number(
-    prompt(
-      `Enter the number of the move ${promptedPokemon.colorChalk(
-        promptedPokemon.name
-      )} should use (0 or 1): `
-    )
-  );
-  return promptedMove;
-}
+// function selectMove() {
+//   promptedMove = Number(
+//     prompt(
+//       `Enter the number of the move ${player.chalk(
+//         player.name
+//       )} should use (0 or 1): `
+//     )
+//   );
+//   return promptedMove;
+// }
+
 // taking a turn
-function takeTurn() {
-  chooseYourMove();
+// function takeTurn() {
+//   selectMove();
 
-  promptedPokemon.attack(
-    promptedPokemon.moveset[promptedMove],
-    promptedOpponent
-  );
-}
+//   player.attack(player.moveset[promptedMove], opponent);
+// }
 
-// export everything
-// module.exports = {
-//   pokemon: pokemon(),
-//   chooseYourPokemon: chooseYourPokemon(),
-//   chooseYourMove: chooseYourMove(),
-//   takeTurn: takeTurn(),
-//   promptedPokemon,
-//   promptedOpponent,
-//   promptedMove,
-//   bulbasaur,
-//   charmander,
-//   squirtle,
-//   tackle,
-//   vinewhip,
-//   scratch,
-//   ember,
-//   watergun
-// };
+// INITIALIZING THE GAME
+const game = (player, opponent) => {
+  let state = { player, opponent };
+  return Object.assign(state, turnMechanics(state));
+};
 
-// // starting the game
+// const chooseYourPokemon = () => ({
+//   player: () => {
+//     let player = undefined;
+//     prompt(
+//       `Enter the name of your Pokemon, either ${greenChalk(
+//         'Bulbasaur'
+//       )}, ${redChalk('Charmander')} or ${blueChalk('Squirtle')}: `
+//     );
+//     switch (player) {
+//       case 'Bulbasaur':
+//         player = bulbasaur;
+//         break;
+//       case 'Charmander':
+//         player = charmander;
+//         break;
+//       case 'Squirtle':
+//         player = squirtle;
+//         break;
+//       // default:
+//       //   break;
+//     }
+//     player.currentHp = player.stats.hp;
+//     return player;
+//   },
+//   opponent: () => {
+//     let opponent = undefined;
+//     prompt(
+//       `Enter the name of the enemy Pokemon, either ${greenChalk(
+//         'Bulbasaur'
+//       )}, ${redChalk('Charmander')} or ${blueChalk('Squirtle')}: `
+//     );
+//     switch (opponent) {
+//       case 'Bulbasaur':
+//         opponent = bulbasaur;
+//         break;
+//       case 'Charmander':
+//         opponent = charmander;
+//         break;
+//       case 'Squirtle':
+//         opponent = squirtle;
+//         break;
+//       // default:
+//       //   break;
+//     }
+//     opponent.currentHp = opponent.stats.hp;
+//     return opponent;
+//   }
+// });
+
+const turnMechanics = game => ({
+  // player choose an action
+  playerMove: () => {
+    let playerMove = Number(
+      prompt(
+        `Enter the number of the move ${game.player.chalk(
+          game.player.name
+        )} should use (0 or 1): `
+      )
+    );
+    return playerMove;
+  },
+  // ai chooses an action
+  opponentMove: () => {
+    let opponentMove = Math.round(Math.random()); // 0 or 1
+    return opponentMove;
+  },
+  playerAttack: playerMove => {
+    game.player.attack(game.player.moveset[playerMove], game.opponent);
+  },
+  opponentAttack: opponentMove => {
+    game.opponent.attack(game.opponent.moveset[opponentMove], game.player);
+  },
+  // who goes first
+  speedCheck: () => {
+    let playerGoesFirst = true;
+    if (game.player.stats.spd < game.opponent.stats.spd) {
+      playerGoesFirst = false;
+    }
+    return playerGoesFirst;
+    // let order = [
+    //   { pokemon: undefined, move: undefined },
+    //   { pokemon: undefined, move: undefined }
+    // ];
+    // if (game.player.stats.spd > game.opponent.stats.spd) {
+    //   order[0].pokemon = game.player;
+    //   order[0].move = game.playerMove;
+    //   order[1].pokemon = game.opponent;
+    //   order[1].move = game.opponentMove;
+    // }
+    // return order;
+  },
+  turnResolve: (playerMove, opponementMove, playerGoesFirst) => {
+    // game.order[0].pokemon.attack(
+    //   game.order[0].pokemon.moveset[game.order[0].move],
+    //   game.order[1].pokemon
+    // );
+    // game.order[1].pokemon.attack(
+    //   game.order[1].pokemon.moveset[game.order[1].move],
+    //   game.order[0].pokemon
+    // );
+    if (playerGoesFirst === true) {
+      game.playerAttack(playerMove);
+      game.opponentAttack(opponementMove);
+    } else {
+      game.opponentAttack(opponementMove);
+      game.playerAttack(playerMove);
+    }
+  }
+});
+
+// STARTING THE GAME
 chooseYourPokemon();
+const thishopefullyworkinggame = game(player, opponent);
+console.log(thishopefullyworkinggame);
 
-// while (promptedOpponent.currentHp > 0) {
+// while (opponent.currentHp > 0) {
 //   takeTurn();
 // }
 // => currentHp set to undefined to start, so wont enter the loop at 1st => dowhile
 do {
-  takeTurn();
-} while (promptedOpponent.currentHp > 0);
-console.log('You won!');
-// while(!promptedOpponent.hasFainted()) => hasFainted is called in the loop so 2 times the console.log()...
+  let playerMove = thishopefullyworkinggame.playerMove();
+  console.log(playerMove);
+  let opponementMove = thishopefullyworkinggame.opponentMove();
+  console.log(opponementMove);
 
-// TEST AREA
+  let playerGoesFirst = thishopefullyworkinggame.speedCheck();
+  console.log(playerGoesFirst);
+
+  thishopefullyworkinggame.turnResolve(
+    playerMove,
+    opponementMove,
+    playerGoesFirst
+  );
+} while (opponent.currentHp > 0);
+console.log('You won!');
+// while(!opponent.hasFainted()) => hasFainted is called in the loop so 2 times the console.log()...
