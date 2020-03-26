@@ -2,28 +2,19 @@
 const chalk = require('chalk');
 const greenChalk = chalk.green;
 const redChalk = chalk.red;
-const blueChalk = chalk.blue;
+const blueChalk = chalk.cyan;
 //
 
 // CREATING FACTORY FUNCTIONS
 // factory function for the attack method that will be assigned to a pokemon object
 const canAttack = pokemon => ({
   target: enemy => {
-    // console.log(
-    //   `${pokemon.chalk(pokemon.name)} is targeting ${enemy.name}.`
-    // );
     return enemy;
   },
   // could not find a way to extract the target from the attack method, if so i would have had the target method as the method created by the factory function canTarget()
   attack: (move, target) => {
     let enemy = pokemon.target(target);
-    console.log(
-      `${pokemon.chalk(pokemon.name)} uses ${
-        move.name
-      } against enemy ${enemy.chalk(enemy.name)}!`
-    );
     let damage = 0;
-    // let currentHp = enemy.stats.hp;
     // chance of hit
     if (Math.random() * 100 < move.acc) {
       let rand = Math.random() * (1.0 - 0.85) + 0.85;
@@ -43,12 +34,10 @@ const canAttack = pokemon => ({
       }
     } else console.log('But it misses!');
 
-    console.log(`It hits for ${damage} hp!`);
+    console.log('It hits for ' + chalk.bold.dim(`${damage}`) + ' hp!');
     enemy.currentHp -= damage;
-    console.log(`${enemy.chalk(enemy.name)} has ${enemy.currentHp}hp left.`);
-    // enemy.currentHp = currentHp;
+    console.log(`${enemy.chalk(enemy.name)} has ${enemy.currentHp} hp left.`);
     enemy.hasFainted();
-    // should it return something ?
   }
 });
 
@@ -59,16 +48,10 @@ const canFaint = pokemon => ({
       console.log(`${pokemon.chalk(pokemon.name)} has fainted!`);
       return true;
     } else {
-      // console.log(
-      //   `${pokemon.chalk(pokemon.name)} can continue to battle!`
-      // );
       return false;
     }
   }
 });
-
-// // factory function for targeting an enemy
-// const canTarget = pokemon => ({});
 
 // factory function for the move objects that will be passed as args to the attack method
 const move = (name, type, power, acc) => {
@@ -97,12 +80,7 @@ const pokemon = (
     chalk,
     moveset
   };
-  return Object.assign(
-    state,
-    canAttack(state),
-    canFaint(state)
-    // canTarget(state)
-  );
+  return Object.assign(state, canAttack(state), canFaint(state));
 };
 
 // DEFINING THE OBJECTS USED
@@ -206,7 +184,14 @@ function chooseYourPokemon() {
 const game = (player, opponent) => {
   let state = { player, opponent };
   return Object.assign(state, turnMechanics(state));
-};
+}; // ,gameMechanics(state)
+
+//
+// timer function
+function sleep(delay) {
+  return new Promise(resolve => setTimeout(resolve, delay));
+}
+//
 
 const turnMechanics = game => ({
   // player choose an action
@@ -215,7 +200,9 @@ const turnMechanics = game => ({
       prompt(
         `Enter the number of the move ${game.player.chalk(
           game.player.name
-        )} should use (0 or 1): `
+        )} should use (0 for ${game.player.moveset[0].name} or 1 for ${
+          game.player.moveset[1].name
+        }): `
       )
     );
     return playerMove;
@@ -225,11 +212,13 @@ const turnMechanics = game => ({
     let opponentMove = Math.round(Math.random()); // 0 or 1
     return opponentMove;
   },
-  playerAttack: playerMove => {
+  playerAttack: /*async*/ playerMove => {
     game.player.attack(game.player.moveset[playerMove], game.opponent);
+    // await sleep(1500);
   },
-  opponentAttack: opponentMove => {
+  opponentAttack: /*async*/ opponentMove => {
     game.opponent.attack(game.opponent.moveset[opponentMove], game.player);
+    // await sleep(1500);
   },
   // who goes first
   speedCheck: () => {
@@ -239,42 +228,69 @@ const turnMechanics = game => ({
     }
     return playerGoesFirst;
   },
-  turnResolve: (playerMove, opponementMove, playerGoesFirst) => {
+  turnResolve: /*async*/ (playerMove, opponentMove, playerGoesFirst) => {
     if (playerGoesFirst === true) {
+      console.log(
+        `${game.player.chalk(game.player.name)} uses ${
+          game.player.moveset[playerMove].name
+        } against enemy ${game.opponent.chalk(game.opponent.name)}!`
+      );
       game.playerAttack(playerMove);
-      game.opponentAttack(opponementMove);
+      // await sleep(2000);
+      console.log(
+        `Enemy ${game.opponent.chalk(game.opponent.name)} uses ${
+          game.opponent.moveset[opponentMove].name
+        } against ${game.player.chalk(game.player.name)}!`
+      );
+      game.opponentAttack(opponentMove);
     } else {
-      game.opponentAttack(opponementMove);
+      console.log(
+        `Enemy ${game.opponent.chalk(game.opponent.name)} uses ${
+          game.opponent.moveset[opponentMove].name
+        } against ${game.player.chalk(game.player.name)}!`
+      );
+      game.opponentAttack(opponentMove);
+      // await sleep(2000);
+      console.log(
+        `${game.player.chalk(game.player.name)} uses ${
+          game.player.moveset[playerMove].name
+        } against enemy ${game.opponent.chalk(game.opponent.name)}!`
+      );
       game.playerAttack(playerMove);
     }
   }
 });
 
+// const gameMechanics = game => ({
+//   play: (playerHp, opponentHp, counter) => {
+//     let playerMove = game.playerMove();
+//     let opponementMove = game.opponentMove();
+//     let playerGoesFirst = game.speedCheck();
+//     game.turnResolve(playerMove, opponementMove, playerGoesFirst);
+
+//     counter++;
+//     console.log(`turn #${counter}`);
+
+//     if (playerHp > 0 && opponentHp > 0) {
+//       setTimeout(() => game.play(), 1000);
+//     }
+//   }
+// });
+
 // STARTING THE GAME
 
 chooseYourPokemon();
-const thishopefullyworkinggame = game(player, opponent);
-console.log(thishopefullyworkinggame);
+const battle = game(player, opponent);
 
-// while (opponent.currentHp > 0) {
-//   takeTurn();
-// }
-// => currentHp set to undefined to start, so wont enter the loop at 1st => dowhile
-do {
-  let playerMove = thishopefullyworkinggame.playerMove();
-  console.log(playerMove);
-  let opponementMove = thishopefullyworkinggame.opponentMove();
-  console.log(opponementMove);
+while (player.currentHp > 0 && opponent.currentHp > 0) {
+  let playerMove = battle.playerMove();
+  let opponentMove = battle.opponentMove();
+  let playerGoesFirst = battle.speedCheck();
+  battle.turnResolve(playerMove, opponentMove, playerGoesFirst);
+}
 
-  let playerGoesFirst = thishopefullyworkinggame.speedCheck();
-  console.log(playerGoesFirst);
+// battle.play(battle.player.currentHp, battle.opponent.currentHp, 0);
 
-  thishopefullyworkinggame.turnResolve(
-    playerMove,
-    opponementMove,
-    playerGoesFirst
-  );
-} while (player.currentHp > 0 || opponent.currentHp > 0);
 if (opponent.currentHp <= 0) {
   console.log('You won!');
 } else if (player.currentHp <= 0) {
