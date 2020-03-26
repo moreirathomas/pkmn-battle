@@ -1,8 +1,8 @@
 // color for line output
 const chalk = require('chalk');
-const greenChalk = chalk.green;
-const redChalk = chalk.red;
-const blueChalk = chalk.cyan;
+const greenChalk = chalk.greenBright;
+const redChalk = chalk.redBright;
+const blueChalk = chalk.cyanBright;
 //
 
 // CREATING FACTORY FUNCTIONS
