@@ -282,6 +282,8 @@ const turnMechanics = game => ({
 chooseYourPokemon();
 const battle = game(player, opponent);
 
+console.log(battle);
+
 while (player.currentHp > 0 && opponent.currentHp > 0) {
   let playerMove = battle.playerMove();
   let opponentMove = battle.opponentMove();

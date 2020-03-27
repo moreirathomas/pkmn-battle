@@ -1,16 +1,10 @@
-const chalk = require('chalk');
+// Factory function for the game
 const prompt = require('prompt-sync')({ sigint: true });
+import { greenChalk, redChalk, blueChalk } from './factories/chalk';
+import { bulbasaur, charmander, squirtle } from './gameInit';
 
-// import { greenChalk, redChalk, blueChalk } from './chalk.js';
-// import { tackle, vinewhip, scratch, ember, watergun } from './move.js';
-// import { bulbasaur, charmander, squirtle } from './pokemon.mjs';
-
-// Factory functions for creating the game
-export const player = '';
-export const opponent = '';
-
-export function chooseYourPokemon() {
-  player = prompt(
+export function selectPlayer() {
+  let player = prompt(
     `Enter the name of your Pokemon, either ${greenChalk(
       'Bulbasaur'
     )}, ${redChalk('Charmander')} or ${blueChalk('Squirtle')}: `
@@ -28,7 +22,11 @@ export function chooseYourPokemon() {
     // default:
     //   break;
   }
-  opponent = prompt(
+  player.currentHp = player.stats.hp;
+  return player;
+}
+export function selectOpponent() {
+  let opponent = prompt(
     `Enter the name of the enemy Pokemon, either ${greenChalk(
       'Bulbasaur'
     )}, ${redChalk('Charmander')} or ${blueChalk('Squirtle')}: `
@@ -46,16 +44,9 @@ export function chooseYourPokemon() {
     // default:
     //   break;
   }
-  player.currentHp = player.stats.hp;
   opponent.currentHp = opponent.stats.hp;
-  return player, opponent;
+  return opponent;
 }
-
-export const game = (player, opponent) => {
-  let state = { player, opponent };
-  return Object.assign(state, turnMechanics(state));
-};
-
 const turnMechanics = game => ({
   // player choose an action
   playerMove: () => {
@@ -123,5 +114,7 @@ const turnMechanics = game => ({
     }
   }
 });
-
-// export { chooseYourPokemon, player, opponent, game };
+export const game = (player, opponent) => {
+  let state = { player, opponent };
+  return Object.assign(state, turnMechanics(state));
+};

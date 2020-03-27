@@ -18,6 +18,7 @@
   "homepage": "https://github.com/moreirathomas/pokenode-battle#readme",
   "dependencies": {
     "chalk": "^3.0.0",
+    "esm": "^3.2.25",
     "prompt-sync": "^4.2.0"
   }
 }

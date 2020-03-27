@@ -1,37 +1,10 @@
+// Factory function for the pokemons
 const chalk = require('chalk');
-
-import { greenChalk, redChalk, blueChalk } from './chalk.js';
-import { tackle, vinewhip, scratch, ember, watergun } from './move.js';
-
-// Factory functions for creating the pokemons
-export const pokemon = (
-  name,
-  type,
-  lvl,
-  hp,
-  atk,
-  def,
-  spd,
-  currentHp,
-  chalk,
-  ...moveset
-) => {
-  let state = {
-    name,
-    type,
-    stats: { lvl, hp, atk, def, spd },
-    currentHp,
-    chalk,
-    moveset
-  };
-  return Object.assign(state, canAttack(state), canFaint(state));
-};
 
 const canAttack = pokemon => ({
   target: enemy => {
     return enemy;
   },
-  // could not find a way to extract the target from the attack method, if so i would have had the target method as the method created by the factory function canTarget()
   attack: (move, target) => {
     let enemy = pokemon.target(target);
     let damage = 0;
@@ -60,7 +33,6 @@ const canAttack = pokemon => ({
     enemy.hasFainted();
   }
 });
-
 const canFaint = pokemon => ({
   hasFainted: () => {
     if (pokemon.currentHp <= 0) {
@@ -71,45 +43,25 @@ const canFaint = pokemon => ({
     }
   }
 });
-
-export const bulbasaur = pokemon(
-  'Bulbasaur',
-  'Grass',
-  5,
-  45,
-  49,
-  49,
-  45,
-  undefined,
-  greenChalk,
-  tackle,
-  vinewhip
-);
-export const charmander = pokemon(
-  'Charmander',
-  'Fire',
-  5,
-  39,
-  52,
-  43,
-  65,
-  undefined,
-  redChalk,
-  scratch,
-  ember
-);
-export const squirtle = pokemon(
-  'Squirtle',
-  'Water',
-  5,
-  44,
-  48,
-  65,
-  43,
-  undefined,
-  blueChalk,
-  tackle,
-  watergun
-);
-
-// export { bulbasaur, charmander, squirtle };
+export const pokemon = (
+  name,
+  type,
+  lvl,
+  hp,
+  atk,
+  def,
+  spd,
+  currentHp,
+  chalk,
+  ...moveset
+) => {
+  let state = {
+    name,
+    type,
+    stats: { lvl, hp, atk, def, spd },
+    currentHp,
+    chalk,
+    moveset
+  };
+  return Object.assign(state, canAttack(state), canFaint(state));
+};

@@ -1,6 +1,8 @@
-import move from './move.js';
-import { pokemon } from './pokemon.mjs';
+import { greenChalk, redChalk, blueChalk } from './factories/chalk';
+import { move } from './factories/move';
+import { pokemon } from './factories/pokemon';
 
+// Creating the moves and the pokemons
 export const tackle = move('Tackle', 'Normal', 35, 95);
 export const vinewhip = move('Vine Whip', 'Grass', 35, 95);
 export const scratch = move('Scratch', 'Normal', 40, 100);
