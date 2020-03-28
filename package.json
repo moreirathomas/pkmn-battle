@@ -1,21 +1,24 @@
 {
-  "name": "pokenode-battle",
+  "name": "pkmn-battle",
   "version": "1.0.0",
-  "description": "A Pokemon battle from an object composition perspective",
-  "main": "pokenode.js",
+  "description": "A Pokémon battle with the the 3 Kanto starters. Made with object composition in mind.",
+  "main": "start.js",
+  "keywords": [
+    "pokemon"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/moreirathomas/pokenode-battle.git"
+    "url": "git+https://github.com/moreirathomas/pkmn-battle.git"
   },
-  "author": "Thomas Moreira moreirathomas97@gmail.com",
+  "author": "Thomas Moreira",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/moreirathomas/pokenode-battle/issues"
+    "url": "https://github.com/moreirathomas/pkmn-battle/issues"
   },
-  "homepage": "https://github.com/moreirathomas/pokenode-battle#readme",
+  "homepage": "https://github.com/moreirathomas/pkmn-battle#readme",
   "dependencies": {
     "chalk": "^3.0.0",
     "esm": "^3.2.25",
