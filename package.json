@@ -1,14 +1,17 @@
 {
   "name": "pkmn-battle",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Pokémon battle with the the 3 Kanto starters. Made with object composition in mind.",
   "main": "start.js",
   "keywords": [
     "pokemon"
   ],
   "scripts": {
-    "start": "node -r esm start",
+    "battle": "node -r esm ./cli",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "battle": "./cli.js"
   },
   "repository": {
     "type": "git",
