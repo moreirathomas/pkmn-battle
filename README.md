@@ -10,7 +10,7 @@ or
 
 ## Usage
 
-`npm run battle` to start running the script, then just follow the insctructions.
+`battle` to start running the script, then just follow the insctructions.
 
 # About
 

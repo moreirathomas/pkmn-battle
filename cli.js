@@ -1,3 +1,3 @@
-#! /usr/bin/env node
+#! /usr/bin/env node -r esm
 import { start } from './start';
 start();
