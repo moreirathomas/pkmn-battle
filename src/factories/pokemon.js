@@ -1,5 +1,6 @@
 // Factory function for the pokemons
 const chalk = require('chalk');
+import { hasWeakness } from './typeCheck';
 
 const canAttack = pokemon => ({
   target: enemy => {
@@ -11,6 +12,7 @@ const canAttack = pokemon => ({
     // chance of hit
     if (Math.random() * 100 < move.acc) {
       let rand = Math.random() * (1.0 - 0.85) + 0.85;
+      let typeModifier = enemy.isWeakTo(move);
       // actual damage formula minus some modifiers
       damage = Math.round(
         (((pokemon.stats.lvl / 5 + 2) *
@@ -18,7 +20,8 @@ const canAttack = pokemon => ({
           (enemy.stats.atk / enemy.stats.def)) /
           50 +
           2) *
-          rand
+          rand *
+          typeModifier
       );
       // chance of critical hit, actual formula
       if (Math.random * 100 < pokemon.stats.spd / 512) {
@@ -29,7 +32,11 @@ const canAttack = pokemon => ({
 
     console.log('It hits for ' + chalk.bold.dim(`${damage}`) + ' hp!');
     enemy.currentHp -= damage;
-    console.log(`${enemy.chalk(enemy.name)} has ${enemy.currentHp} hp left.`);
+    console.log(
+      `${enemy.chalk(enemy.name)} has ${chalk.bold.dim(
+        enemy.currentHp
+      )} hp left.`
+    );
     enemy.hasFainted();
   }
 });
@@ -63,5 +70,10 @@ export const pokemon = (
     chalk,
     moveset
   };
-  return Object.assign(state, canAttack(state), canFaint(state));
+  return Object.assign(
+    state,
+    canAttack(state),
+    canFaint(state),
+    hasWeakness(state)
+  );
 };

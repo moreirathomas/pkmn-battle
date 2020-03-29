@@ -1,13 +1,15 @@
 // Factory function for the game
 const prompt = require('prompt-sync')({ sigint: true });
+const chalk = require('chalk');
 import { greenChalk, redChalk, blueChalk } from './factories/chalk';
 import { bulbasaur, charmander, squirtle } from './gameInit';
 
 export function selectPlayer() {
+  console.log('Choose your Pokemon!');
   let player = prompt(
-    `Enter the name of your Pokemon, either ${greenChalk(
-      'Bulbasaur'
-    )}, ${redChalk('Charmander')} or ${blueChalk('Squirtle')}: `
+    `Enter either ${greenChalk('Bulbasaur')}, ${redChalk(
+      'Charmander'
+    )} or ${blueChalk('Squirtle')}: `
   );
   switch (player) {
     case 'Bulbasaur':
@@ -26,10 +28,11 @@ export function selectPlayer() {
   return player;
 }
 export function selectOpponent() {
+  console.log('Choose the enemy Pokemon!');
   let opponent = prompt(
-    `Enter the name of the enemy Pokemon, either ${greenChalk(
-      'Bulbasaur'
-    )}, ${redChalk('Charmander')} or ${blueChalk('Squirtle')}: `
+    `Enter either ${greenChalk('Bulbasaur')}, ${redChalk(
+      'Charmander'
+    )} or ${blueChalk('Squirtle')}: `
   );
   switch (opponent) {
     case 'Bulbasaur':
@@ -50,13 +53,12 @@ export function selectOpponent() {
 const turnMechanics = game => ({
   // player choose an action
   playerMove: () => {
+    console.log(`\n\nWhat should ${game.player.chalk(game.player.name)} do? `);
     let playerMove = Number(
       prompt(
-        `Enter the number of the move ${game.player.chalk(
-          game.player.name
-        )} should use (0 for ${game.player.moveset[0].name} or 1 for ${
-          game.player.moveset[1].name
-        }): `
+        `Enter ${chalk.bold.dim(0)} for ${
+          game.player.moveset[0].name
+        } or ${chalk.bold.dim(1)} for ${game.player.moveset[1].name}: `
       )
     );
     return playerMove;
@@ -85,28 +87,28 @@ const turnMechanics = game => ({
   turnResolve: /*async*/ (playerMove, opponentMove, playerGoesFirst) => {
     if (playerGoesFirst === true) {
       console.log(
-        `${game.player.chalk(game.player.name)} uses ${
+        `\n${game.player.chalk(game.player.name)} uses ${
           game.player.moveset[playerMove].name
         } against enemy ${game.opponent.chalk(game.opponent.name)}!`
       );
       game.playerAttack(playerMove);
       // await sleep(2000);
       console.log(
-        `Enemy ${game.opponent.chalk(game.opponent.name)} uses ${
+        `\nEnemy ${game.opponent.chalk(game.opponent.name)} uses ${
           game.opponent.moveset[opponentMove].name
         } against ${game.player.chalk(game.player.name)}!`
       );
       game.opponentAttack(opponentMove);
     } else {
       console.log(
-        `Enemy ${game.opponent.chalk(game.opponent.name)} uses ${
+        `\nEnemy ${game.opponent.chalk(game.opponent.name)} uses ${
           game.opponent.moveset[opponentMove].name
         } against ${game.player.chalk(game.player.name)}!`
       );
       game.opponentAttack(opponentMove);
       // await sleep(2000);
       console.log(
-        `${game.player.chalk(game.player.name)} uses ${
+        `\n${game.player.chalk(game.player.name)} uses ${
           game.player.moveset[playerMove].name
         } against enemy ${game.opponent.chalk(game.opponent.name)}!`
       );

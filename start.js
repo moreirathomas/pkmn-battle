@@ -1,6 +1,6 @@
 import { game, selectPlayer, selectOpponent } from './src/gameMechanics';
 
-export const start = () => {
+const start = () => {
   // Starting the game
   const player = selectPlayer();
   const opponent = selectOpponent();
@@ -20,4 +20,4 @@ export const start = () => {
   }
 };
 
-// start();
+start();
