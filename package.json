@@ -1,6 +1,6 @@
 {
   "name": "pkmn-battle",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A Pokémon battle with the the 3 Kanto starters. Made with object composition in mind.",
   "main": "start.js",
   "keywords": [
